@@ -9,7 +9,7 @@ object Deps {
     def ammonium = "0.8.3-1"
     def flink = "1.1.3"
     def jupyterKernel = "0.4.1"
-    def scio = "0.2.12"
+    def scio = "0.6.0"
   }
 
   def ammonium = ("org.jupyter-scala" % "ammonite" % Versions.ammonium).cross(CrossVersion.full)
