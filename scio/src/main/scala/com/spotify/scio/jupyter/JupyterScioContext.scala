@@ -6,10 +6,11 @@ import java.nio.file.{Files, Path}
 import ammonite.repl.RuntimeAPI
 import ammonite.runtime.InterpAPI
 
-import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import org.apache.beam.sdk.options.{PipelineOptions, PipelineOptionsFactory}
+import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions
 import com.google.api.services.dataflow.DataflowScopes
-import com.google.cloud.dataflow.sdk.options.{DataflowPipelineOptions, PipelineOptions, PipelineOptionsFactory}
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.auth.Credentials
 import com.spotify.scio.{ScioContext, ScioResult}
 
 import scala.collection.JavaConverters._
@@ -24,36 +25,43 @@ class JupyterScioContext(
 )(implicit
   interpApi: InterpAPI,
   runtimeApi: RuntimeAPI
-) extends ScioContext(options, Nil) {
-
-  addArtifacts(
-    replJarPath.toAbsolutePath.toString ::
-      runtimeApi.sess.frames
-        .flatMap(_.classpath)
-        .map(_.getAbsolutePath)
-  )
+) extends ScioContext(options,
+  replJarPath.toAbsolutePath.toString ::
+    runtimeApi.sess.frames
+      .flatMap(_.classpath)
+      .map(_.getAbsolutePath)
+) {
 
   interpApi.load.onJarAdded {
     case Seq() => // just in case
     case jars =>
-      addArtifacts(jars.map(_.getAbsolutePath).toList)
+      throw new RuntimeException("Cannot add jars after ScioContext Initialization")
   }
 
-  def setGcpCredential(credential: Credential): Unit =
+  def setGcpCredentials(credential: Credentials): Unit =
     options.as(classOf[DataflowPipelineOptions]).setGcpCredential(credential)
-  def setGcpCredential(path: String): Unit =
-    setGcpCredential(
-      GoogleCredential.fromStream(new FileInputStream(new File(path))).createScoped(
+
+  def setGcpCredentials(path: String): Unit =
+    setGcpCredentials(
+      GoogleCredentials.fromStream(new FileInputStream(new File(path))).createScoped(
         List(DataflowScopes.CLOUD_PLATFORM).asJava
       )
     )
 
-  def withGcpCredential(credential: Credential): this.type = {
-    setGcpCredential(credential)
+  def withDefaultGcpCredentials(): this.type = {
+    setGcpCredentials(GoogleCredentials.getApplicationDefault.createScoped(
+      List(DataflowScopes.CLOUD_PLATFORM).asJava)
+    )
     this
   }
-  def withGcpCredential(path: String): this.type = {
-    setGcpCredential(path)
+
+  def withGcpCredentials(credentials: Credentials): this.type = {
+    setGcpCredentials(credentials)
+    this
+  }
+
+  def withGcpCredentials(path: String): this.type = {
+    setGcpCredentials(path)
     this
   }
 
@@ -79,8 +87,7 @@ object JupyterScioContext {
     JupyterScioContext(
       PipelineOptionsFactory.fromArgs(
         args
-          .map { case (k, v) => s"--$k=$v" }
-          .toArray
+          .map { case (k, v) => s"--$k=$v" }: _*
       ).as(classOf[DataflowPipelineOptions]),
       nextReplJarPath()
     )
