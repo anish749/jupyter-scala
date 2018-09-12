@@ -51,4 +51,16 @@ package object scio {
     }
   }
 
+  implicit class JupyterTap[T](self: Tap[T]) {
+
+    /**
+     * Print the contents of a tap on screen
+     */
+    def show(numElements: Int = 20): Unit = println(self
+      .value
+      .take(numElements)
+      .mkString("\n")
+    )
+  }
+
 }

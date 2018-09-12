@@ -9,7 +9,7 @@ object Deps {
     def ammonium = "0.8.3-1"
     def flink = "1.1.3"
     def jupyterKernel = "0.4.1"
-    def scio = "0.6.1-SNAPSHOT"
+    def scio = "0.6.1"
     def beam = "2.6.0"
   }
 
