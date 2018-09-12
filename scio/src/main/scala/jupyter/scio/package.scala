@@ -28,21 +28,16 @@ package object scio {
     /**
      * Get first n elements of the SCollection as a String separated by \n
      */
-    private def asString(numElements: Int): String = {
-      val mSelf = self
+    private def asString(numElements: Int): String =
+      self
         .withName(s"Take $numElements")
         .take(numElements)
-        .materialize
-
-      self.context.close().waitUntilDone()
-      mSelf
-        .waitForResult() // Should be ready
+        .tap()
         .value
         .mkString("\n")
-    }
 
     /**
-     * Print elements on screen
+     * Closes the ScioContext and print elements on screen
      */
     def show(numElements: Int = 20): Unit = println(asString(numElements))
 
@@ -52,7 +47,7 @@ package object scio {
     def tap(): Tap[T] = {
       val mSelf = self.materialize
       self.context.close().waitUntilDone()
-      mSelf.waitForResult()
+      mSelf.waitForResult() // Should be ready
     }
   }
 
