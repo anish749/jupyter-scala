@@ -6,12 +6,12 @@ import java.nio.file.{Files, Path}
 import ammonite.repl.RuntimeAPI
 import ammonite.runtime.InterpAPI
 
-import org.apache.beam.sdk.options.{PipelineOptions, PipelineOptionsFactory}
-import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions
 import com.google.api.services.dataflow.DataflowScopes
-import com.google.auth.oauth2.GoogleCredentials
 import com.google.auth.Credentials
+import com.google.auth.oauth2.GoogleCredentials
 import com.spotify.scio.{ScioContext, ScioResult}
+import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions
+import org.apache.beam.sdk.options.{PipelineOptions, PipelineOptionsFactory}
 
 import scala.collection.JavaConverters._
 
