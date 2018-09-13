@@ -30,7 +30,7 @@ package object scio {
      */
     private def asString(numElements: Int): String =
       self
-        .withName(s"Take $numElements")
+        .withName(s"Take $numElements elements")
         .take(numElements)
         .tap()
         .value

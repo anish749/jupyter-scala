@@ -12,6 +12,7 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.spotify.scio.{ScioContext, ScioResult}
 import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions
 import org.apache.beam.sdk.options.{PipelineOptions, PipelineOptionsFactory}
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
@@ -31,6 +32,8 @@ class JupyterScioContext(
       .flatMap(_.classpath)
       .map(_.getAbsolutePath)
 ) {
+
+  private val logger = LoggerFactory.getLogger(this.getClass)
 
   interpApi.load.onJarAdded {
     case Seq() => // just in case
@@ -67,6 +70,7 @@ class JupyterScioContext(
 
   /** Enhanced version that dumps REPL session jar. */
   override def close(): ScioResult = {
+    logger.info("Closing Scio Context") // Some APIs exposed only for Jupyter might close
     runtimeApi.sess.sessionJarFile(replJarPath.toFile)
     super.close()
   }
