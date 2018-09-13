@@ -57,16 +57,6 @@ class JupyterScioContext(options: PipelineOptions,
       )
     )
 
-  def withGcpCredential(credentials: Credentials): JupyterScioContext = {
-    setGcpCredential(credentials)
-    _currentContext.get
-  }
-
-  def withGcpCredential(path: String): JupyterScioContext = {
-    setGcpCredential(path)
-    _currentContext.get
-  }
-
   /** Enhanced version that dumps REPL session jar. */
   override def close(): ScioResult = {
     // Some APIs exposed only for Jupyter will close Scio Context
@@ -95,7 +85,6 @@ object JupyterScioContext {
   private var _pipelineOptions: Option[PipelineOptions] = None
   private var _gcpCredentials: Option[Credentials] = None
 
-
   /**
    * Always returns a new Scio Context, and forgets the old context
    */
@@ -114,7 +103,7 @@ object JupyterScioContext {
            (implicit interpApi: InterpAPI, runtimeApi: RuntimeAPI): Unit = {
     _pipelineOptions = Some(options)
     _currentContext = Some(new JupyterScioContext(options, nextReplJarPath()))
-    logger.info("ScioContext is accessible as sc")
+    logger.info("ScioContext is accessible as sc after importing com.spotify.scio.jupyter.JupyterScioContext._")
   }
 
   /**
