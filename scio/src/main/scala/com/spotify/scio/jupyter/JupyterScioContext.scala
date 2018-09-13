@@ -82,7 +82,7 @@ class JupyterScioContext(
 
 }
 
-object JupyterScioContext {
+private[jupyter] object JupyterScioContext {
 
   def apply(args: (String, String)*)(implicit
     interpApi: InterpAPI,
