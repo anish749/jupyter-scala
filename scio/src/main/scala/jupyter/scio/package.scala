@@ -2,6 +2,9 @@ package jupyter
 
 import java.io.File
 
+import ammonite.repl.RuntimeAPI
+import ammonite.runtime.InterpAPI
+
 import com.google.auth.Credentials
 import com.spotify.scio.bigquery.BigQueryClient
 import com.spotify.scio.io.Tap
@@ -11,8 +14,11 @@ import _root_.scala.tools.nsc.interpreter.Helper
 
 package object scio {
 
+  // Alias to reduce number of imports in notebook
   val JupyterScioContext: com.spotify.scio.jupyter.JupyterScioContext.type =
     com.spotify.scio.jupyter.JupyterScioContext
+
+  def sc(implicit interpApi: InterpAPI, runtimeApi: RuntimeAPI) = JupyterScioContext.sc
 
   def bigQueryClient(project: String): BigQueryClient =
     Helper.bigQueryClient(project)
@@ -23,6 +29,7 @@ package object scio {
   def bigQueryClient(project: String, secretFile: File): BigQueryClient =
     Helper.bigQueryClient(project, secretFile)
 
+  // Helpers for interactive analysis
   implicit class JupyterSCollection[T](self: SCollection[T]) {
 
     /**

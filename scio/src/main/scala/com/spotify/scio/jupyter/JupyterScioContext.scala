@@ -103,7 +103,7 @@ object JupyterScioContext {
            (implicit interpApi: InterpAPI, runtimeApi: RuntimeAPI): Unit = {
     _pipelineOptions = Some(options)
     _currentContext = Some(new JupyterScioContext(options, nextReplJarPath()))
-    logger.info("ScioContext is accessible as sc after importing com.spotify.scio.jupyter.JupyterScioContext._")
+    logger.info("ScioContext is accessible as sc")
   }
 
   /**
